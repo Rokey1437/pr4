@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="location">
+        Your location will go here.
+    </div>
+    <div id="distance">
+        Distance from College will go here.
+    </div>
+    <script> src = "script.js"</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', getMyLocation)
+
+        function getMyLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(displayLocation)
+            } else {
+                alert("Oops, no geolocation support")
+            }
+        }
+        
+        function displayLocation(position) {
+            let latitude = position.coords.latitude
+            let longitude = position.coords.longitude
+            let div = document.getElementById("location")
+            div.innerHTML = `You are at Latitude: ${latitude}, Longitude: ${longitude}`
+            div.innerHTML += `(with ${position.coords.accuracy} meters acceuracy)`
+            let km = computerDistance(position.coords, ourCoords)
+            let distance = document.getElementById("distance")
+            distance.innerHTML = `You are ${km} from the College`
+        }
+
+        function displayError(error) {
+            const errorTypes = {
+                0: "Unknown error",
+                1: "permission denied by user",
+                2: "Position is not available",
+                3: "Request timed out"
+
+            };
+            const errorMessage = errorTypes[error.code];
+            if (error.code == 0 || error.code == 2) {
+                errorMessage = errorMessage + " " + error.message;
+            }
+            let div = document.getElementById("location");
+            div.innerHTML = errorMessage;
+        }
+
+        function computerDistance(startCoords, destCoords) {
+            let startLatRads = degreesToRadians(startCoords.latitude);
+            let startLongRads = degreesToRadians(startCoords.longitude);
+            let destLatRads = degreesToRadians(destCoords.latitude);
+            let destLongRads = degreesToRadians(destCoords.longitude);
+            let Radius = 6371;
+
+            let distance = Math.acos(Math.sin(startLatRads) * Math.sin(destLatRads) + 
+            Math.cos(startLatRads) * Math.cos(destLatRads) * Math.cos(startLongRads - 
+            destLongRads)) * Radius;
+            return distance;
+        }
+
+        function degreesToRadians(degrees) {
+            let radians = (degrees * Math.PI) / 180;
+            return radians;
+        }
+        const ourCoords = {
+            latitude: 48.943107671006615,
+            longitude: 24.733820593378766
+        }
+    </script>
+</body>
+
+</html>
